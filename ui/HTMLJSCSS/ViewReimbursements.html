@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewReimbursements</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <h1>Reimbursements</h1>
+    <table id="reimbTable">
+        <thead>
+            <tr>
+                <th>Reimbursement Id</th>
+                <th>Amount</th>
+                <th>Submitted on</th>
+                <th>Resolved on</th>
+                <th>Description</th>
+                <th>Author Id</th>
+                <th>Resolver Id</th>
+                <th>Status</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody id="tableData"></tbody>
+    </table>
+
+    <button onclick="toLanding()">Home</button>
+    <script>
+        function toLanding() {
+            window.location.href = "./Landing.html"
+        }
+    </script>
+
+    <script src="./SiteFunctionality.js"></script>
+    <script src="./Reimbursements.js"></script>
+    <script>
+        //window.onload = getItem(localStorage.getItem("idToke"));
+        (async function getItem(id) {
+            let response = await fetch(
+                "http://localhost:8080/ERS/Reimbursement",
+                {
+                    method: "GET",
+                    headers:
+                    {
+                        "Content-Type": "application/json",
+                        "reimbId": localStorage.getItem("idToke"),
+                        "mode": "getAll"
+                    }
+                });
+            let json = await response.json();
+
+            /*
+            for (let ele of json) {
+                console.log(ele.description);
+            }
+            */
+            console.log(json);
+            for (let ele of json) {
+                let temp = "<tr id=" + ele.reimbursementId + " \" onmouseover=\"changeColor(this, true);\" onmouseout=\"changeColor(this, false);\">";
+                temp += "<td>" + ele.reimbursementId + "</td>";
+                temp += "<td>" + ele.reimbursementAmount +"</td>";
+                temp += "<td>" + ele.submitted + "</td>";
+                temp += "<td>" + ele.resolved + "</td>";
+                temp += "<td>" + ele.description + "</td>";
+                temp += "<td>" + ele.authorName + "</td>";
+                temp += "<td>" + ele.resolverName + "</td>";
+                temp += "<td>" + ele.enumStatus + "</td>";
+                temp += "<td>" + ele.enumType + "</td>";
+                temp += "<td> <button id=" + ele.reimbursementId + " type=\"submit\" onclick=\"submit("+ ele.reimbursementId + ")\">Delete</button> </td>";
+                if(ele.status == 1){
+                    temp += "<td> <button id=" + ele.reimbursementId + " type=\"submit\" onclick=\"submit1("+ ele.reimbursementId + ")\">Update</button> </td>";
+                }
+                document.getElementById("tableData").innerHTML += temp;
+    }
+    })(localStorage.getItem("idToke"));
+    </script>
+    <script src="Reimbursements.js"></script>
+    <script>
+        async function submit(id) {
+            console.log(id);
+            //let message = document.getElementById(id).innerText.toString;
+            //console.log(message);
+            let response = await deleteReimbursement(id);
+            console.log("Response: ", response);
+            if (response.status == 200) {
+                alert("Reimbursement successfully completed");
+                window.location.href = "./Landing.html"
+            }
+            else {
+                alert("Unable to delete reimbursement");
+            }
+
+        }
+    </script>
+    <script>
+        function submit1(id) {
+            localStorage.setItem("reimbIdToke", id);
+            console.log(localStorage.getItem("reimbIdToke"));
+            window.location.href = "./UpdateReimbursements.html"
+        }
+    </script>
+
+</body>
+
+</html>

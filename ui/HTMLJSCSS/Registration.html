@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+
+</head>
+
+<body>
+    <h1>Registration</h1>
+    <div class="reimbCreateLabel">
+        <label>Username:</label>
+        <input type="text" id="userName" name="userName">
+        <br>
+        <label>Password:</label>
+        <input type="password" id="password" name="password">
+        <br>
+        <label>First Name:</label>
+        <input type="text" id="fName" name="fName">
+        <br>
+        <label>Last Name:</label>
+        <input type="text" id="lName" name="lName">
+        <br>
+        <label>Email:</label>
+        <input type="text" id="email" name="email">
+    </div>
+    <br>
+    <button onclick="submit()">Register account</button>
+
+    <script src="./User.js"></script>
+    <script>
+        async function submit() {
+            let newUser =
+            {
+                userName: document.getElementById("userName").value,
+                password: document.getElementById("password").value,
+                fName: document.getElementById("fName").value,
+                lName: document.getElementById("lName").value,
+                email: document.getElementById("email").value
+            }
+            let response = await register(newUser);
+            console.log("Response: ", response);
+
+            if (response.status == 201) {
+                let token = response.headers.get("authToken");
+                console.log("authToken received: ", token);
+                localStorage.setItem("authToken", token);
+                //navigate the window to the landing page
+                window.location.href = "./Landing.html";
+
+            }
+            else if (response.status == 401) {
+                alert("Username is not unique");
+            }
+            else if (response.status == 402) {
+                alert("Email is not unique");
+            }
+            else if (response.status == 451) {
+                alert("Username must start with letter and be alphnumeric after that.\n Min length is 3, max is 15.");
+            }
+            else if (response.status == 452) {
+                alert("Password must contain one: upper-case, lowercase, special character, \n and be between 8 and 15 characters");
+            }
+            else if (response.status == 453) {
+                alert("First name must start with letter and be alphnumeric after that.\n Min length is 3, max is 15.");
+            }
+            else if (response.status == 454) {
+                alert("Last name must start with letter and be alphnumeric after that.\n Min length is 3, max is 15.");
+            }
+            else if (response.status == 455) {
+                alert("Email must be in format of emailname@example.org");
+            }
+            else {
+                alert("Unable to register!");
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <h1>Pending Requests</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Reimbursement Id</th>
+                <th>Amount</th>
+                <th>Submitted on</th>
+                <th>Description</th>
+                <th>Author id</th>
+                <th>Status</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody id="tableData"></tbody>
+    </table>
+
+    <button onclick="toFMHome()">Admin Home</button>
+    <script>
+        function toFMHome() {
+            window.location.href = "./FinanceManagerHome.html"
+        }
+    </script>
+    <script src="./SiteFunctionality.js"></script>
+    <script src="./AdminReimbursements.js"></script>
+    <script>
+        //window.onload = getItem(localStorage.getItem("idToke"));
+        (async function getItem() {
+            let response = await fetch(
+                "http://localhost:8080/ERS/Admin",
+                {
+                    method: "GET",
+                    headers:
+                    {
+                        "Content-Type": "application/json",
+
+                    }
+                });
+            let json = await response.json();
+
+            /*
+            for (let ele of json) {
+                console.log(ele.description);
+            }
+            */
+            console.log(json);
+            for (let ele of json) {
+                let temp = "";
+                temp += "<tr onmouseover=\"changeColor(this, true);\" onmouseout=\"changeColor(this, false);\">";
+                temp += "<td>" + ele.reimbursementId + "</td>";
+                temp += "<td>" + ele.reimbursementAmount + "</td>";
+                temp += "<td>" + ele.submitted + "</td>";
+                temp += "<td>" + ele.description + "</td>";
+                temp += "<td>" + ele.authorName + "</td>";
+                temp += "<td>" + ele.enumStatus + "</td>";
+                temp += "<td>" + ele.enumType + "</td>";
+                temp += "<td> <button id=" + ele.reimbursementId + " type=\"submit\" onclick=\"approve("+ ele.reimbursementId + ")\">Approve</button> </td>";
+                temp += "<td> <button id=" + ele.reimbursementId + " type=\"submit\" onclick=\"deny("+ ele.reimbursementId + ")\">Deny</button> </td>";
+                temp += "</tr>";
+
+
+                document.getElementById("tableData").innerHTML += temp;
+            }
+        })();
+    </script>
+
+
+<script>
+    async function approve(id) {
+        var answer = window.confirm("Are you sure you want to approve reimbursement: ", id);
+        if(answer){
+            let reimbursement = {
+                reimbursementId: id,
+                resolver: localStorage.getItem("idToke"),
+                status: 2
+            }
+            console.log("Building Reim Obj: ", reimbursement);
+            let response = await adminUpdateReimbursement(reimbursement);
+            console.log("Response: ", response);
+            if (response.status == 200) {
+                alert("Reimbursement successfully completed");
+                window.location.href = "./FinanceManagerHome.html"
+            }
+            else {
+                alert("Unable to create new reimbursement");
+            }
+        }
+        else{
+            alert("Did not approve")
+            window.location.href = "./PendingApprovals.html";
+        }
+    }
+</script>
+<script>
+    async function deny(id) {
+        var answer = window.confirm("Are you sure you want to deny reimbursement: ", id);
+        if(answer){
+            let reimbursement = {
+                reimbursementId: id,
+                resolver: localStorage.getItem("idToke"),
+                status: 3
+            }
+            //console.log("Building Reim Obj: ", reimbursement);
+            let response = await adminUpdateReimbursement(reimbursement);
+            console.log("Response: ", response);
+            if (response.status == 200) {
+                alert("Reimbursement successfully completed");
+                window.location.href = "./FinanceManagerHome.html"
+            }
+            else {
+                alert("Unable to create new reimbursement");
+            }
+        }
+        else{
+            alert("Did not deny")
+            window.location.href = "./PendingApprovals.html";
+        }
+    }
+    
+</script>
+
+</body>
+
+</html>

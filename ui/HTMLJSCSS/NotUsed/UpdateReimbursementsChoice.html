@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        Enter the Reimbursement Id you want to update:
+        <input type="number" id="reimbId" name="reimbId">
+    </div>
+
+    <button type="submit" onclick="toUpdateReimbursement()">Reimbursement to update</button>
+    <script>
+        function toUpdateReimbursement() {
+            localStorage.setItem("reimbIdToke", document.getElementById("reimbId").value);
+            console.log(localStorage.getItem("reimbIdToke"));
+            window.location.href = "./UpdateReimbursements.html"
+        }
+    </script>
+
+
+
+    <hr id="title">Reimbursements</hr>
+    <table>
+        <thead>
+            <tr>
+                <th>Reimbursement Id</th>
+                <th>Amount</th>
+                <th>Submitted on</th>
+                <th>Resolved on</th>
+                <th>Description</th>
+                <th>Author Id</th>
+                <th>Resolver Id</th>
+                <th>Status</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody id="tableData"></tbody>
+    </table>
+
+    <button onclick="toLanding()">Home</button>
+    <script>
+        function toLanding() {
+            window.location.href = "./Landing.html"
+        }
+    </script>
+    <script src="./Reimbursements.js"></script>
+    <script>
+        //window.onload = getItem(localStorage.getItem("idToke"));
+        (async function getItem() {
+            let response = await fetch(
+                "http://localhost:8080/ERS/Reimbursement",
+                {
+                    method: "GET",
+                    headers:
+                    {
+                        "Content-Type": "application/json",
+                        "reimbId": localStorage.getItem("idToke"),
+                        "mode": "getAll"
+                    }
+                });
+            let json = await response.json();
+
+            /*
+            for (let ele of json) {
+                console.log(ele.description);
+            }
+            */
+            console.log(json);
+            for (let ele of json) {
+                let temp = "";
+                temp += "<tr>";
+                temp += "<td>" + ele.reimbursementId + "</td>";
+                temp += "<td>" + ele.reimbursementAmount + "</td>";
+                temp += "<td>" + ele.submitted + "</td>";
+                temp += "<td>" + ele.resolved + "</td>";
+                temp += "<td>" + ele.description + "</td>";
+                temp += "<td>" + ele.author + "</td>";
+                temp += "<td>" + ele.resolver + "</td>";
+                temp += "<td>" + ele.status + "</td>";
+                temp += "<td>" + ele.type + "</td>";
+                temp += "</tr>";
+
+
+                document.getElementById("tableData").innerHTML += temp;
+            }
+        })(localStorage.getItem("idToke"));
+    </script>
+</body>
+
+</html>

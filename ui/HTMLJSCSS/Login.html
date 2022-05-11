@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <h1>Employee Reimbursement System</h1>
+    <label>UserName</label>
+    <input type="text" id="userName" name="userName">
+    <br>
+    <label>Password</label>
+    <input type="password" id="password" name="password">
+    <br>
+    <button type="submit" onclick="submitForm()">Login</button>
+
+    <!-- This imports a script file, in this case it imports the exported scripts from that file -->
+    <script src="./User.js"></script>
+    <script>
+        async function submitForm() {
+            let authDto = {
+                userName: document.getElementById("userName").value,
+                password: document.getElementById("password").value
+            }
+
+            let response = await login(authDto);
+
+            console.log("Response: ", response);
+            console.log("Response JSON: ", response.json());
+
+            if (response.status == 200) {
+                /*
+                For this to work, you must send back a token in the header of the response
+                The key should match the shown key name "authToken" and the value should be
+                a string you can use to locally store information about the logged in user.
+                In this case we are getting a token that contains the username string, and storing it.
+                */
+                let token = response.headers.get("authToken");
+                console.log("authToken received: ", token);
+                localStorage.setItem("authToken", token);
+
+                //navigate the window to the landing page
+                window.location.href = "./Landing.html";
+
+            } else {
+                alert("Unable to log in! Check username and password!");
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>

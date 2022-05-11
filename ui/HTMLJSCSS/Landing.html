@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+
+    <h1 id="name">
+    </h1>
+    <p>
+        Welcome to the Employee Reimbursement System.
+        <br>
+        Please select what you would like to do below:
+    </p>
+    <button onclick="toCreateReimbursement()">Create Reimbursement</button>
+    <script>
+        function toCreateReimbursement() {
+            window.location.href = "./CreateReimbursement.html"
+        }
+    </script>
+
+    <button onclick="toViewReimbursements()">View Reimbursements</button>
+    <script>
+        function toViewReimbursements() {
+            window.location.href = "./ViewReimbursements.html"
+        }
+    </script>
+
+    <p id="adminRoles"></p>
+
+    <!-- This imports a script file, in this case it imports the exported scripts from that file -->
+    <script src="./User.js"></script>
+    <script>
+        let authorizedUser = localStorage.getItem("authToken");
+        console.log("authorizedUser: ", authorizedUser);
+
+        /*
+        This is a self-invoking function. To build one, wrap the function declaration in ()
+        then add another pair of () at the end to act as the parameter list. Effectively
+        as soon as the function is defined it is called.
+        */
+        (async function displayUser() {
+            let response = await getUser(authorizedUser);
+            let json = await response.json();
+            console.log("Response: ", response);
+            console.log("Response JSON: ", json);
+            let tokenUn = response.headers.get("idToke");
+            console.log("authToken received: ", tokenUn);
+            localStorage.setItem("idToke", json.userId);
+            let tokenRole = response.headers.get("roleId");
+            console.log("authToken received: ", tokenRole);
+            localStorage.setItem("roleId", json.roleId);
+
+            let name = document.getElementById("name");
+            name.innerHTML += "Welcome " + json.fName + " " + json.lName + " ";
+
+            if (localStorage.getItem("roleId") == 2) {
+                let temp = "";
+                temp += "<a href=\"./FinanceManagerHome.html\">Finance Manager home page</a>";
+                document.getElementById("adminRoles").innerHTML += temp;
+            }
+
+            /*
+            reference for the moment
+            let paragraph = document.getElementById("pageContent");
+            paragraph.innerHTML += "<h1>Welcome, "
+                + json.fName
+                + "</h1><br>"
+                + json.lName + ", " + json.fName
+                + "<br> username: " + json.userName
+                + "<br> email: " + json.email
+            */
+        })(); 
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>createReimbursement</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <h1>Create your reimbursement</h1>
+
+    <button onclick="toLanding()" class="button">Home</button>
+    <script>
+        function toLanding() {
+            window.location.href = "./Landing.html"
+        }
+    </script>
+    <br>
+    <div class="reimbCreateLabel">
+        <label>Amount:</label>
+        <input type="number" id="amount" name="amount" class="input">
+        <br>
+        <label>Description:</label>
+        <input type="text" id="description" name="description" class="input">
+        <br>
+    </div>
+    <div class="input">
+        <label class="reimbCreateLabel">Type:</label>
+        <input type="radio" id="radioButtonVal1" name="type" class="typeRadio" value=1>Transportation
+        <input type="radio" id="radioButtonVal2" name="type" class="typeRadio" value=2>Food
+        <input type="radio" id="radioButtonVal3" name="type" class="typeRadio" value=3>Lodging
+        <input type="radio" id="radioButtonVal4" name="type" class="typeRadio" value=4>Miscellaneous
+    </div>
+    <br>
+    <button onclick="submit()" class="button">Create</button>
+
+    <script src="./Reimbursements.js"></script>
+    <script>
+        async function submit() {
+
+            let typeVal = 0;
+            for (let ele of document.getElementsByClassName("typeRadio")) {
+                if (ele.checked == true) {
+                    typeVal = ele.value;
+                }
+            }
+            if (typeVal == 0) {
+                alert("Must select type");
+            }
+            else {
+                let newReimbursement = {
+                    reimbursementAmount: document.getElementById("amount").value,
+                    description: document.getElementById("description").value,
+                    author: localStorage.getItem("idToke"),
+                    //type: document.getElementById("type").value
+                    type: typeVal
+                }
+                console.log("Building Reim Obj: ", newReimbursement);
+                let response = await createReimbursement(newReimbursement);
+                console.log("Response: ", response);
+                if (response.status == 201) {
+                    alert("Reimbursement successfully completed");
+
+                    window.location.href = "./Landing.html"
+                }
+                else if (response.status == 451) {
+                    alert("Please make sure it is in a dollar format XX.xx");
+                }
+                else if (response.status == 452) {
+                    alert("Description must be a minimum of three characters and start with a letter.");
+                }
+                else {
+                    alert("Unable to create new reimbursement");
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>

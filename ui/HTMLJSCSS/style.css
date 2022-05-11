@@ -1,0 +1,45 @@
+body {
+    background-color: #99ceff;
+}
+
+h1 {
+    background-color: #F45E3E;
+    color: white;
+    font-size: xx-large;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+thead,
+td {
+    padding: 10px;
+    border: 1px solid black;
+}
+
+p {
+    font-size: large;
+}
+
+label,
+input {
+    margin: 10px;
+}
+
+.button {
+    margin: 10px;
+}
+
+.reimbCreateLabel,
+.input,
+.typeRadio {
+    color: #000;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.reimbCreateLabel {
+    font-weight: bold;
+    width: 100px;
+}

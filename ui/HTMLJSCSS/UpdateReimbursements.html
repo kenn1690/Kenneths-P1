@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UpdateReimbursements</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+
+    <h1>Update your reimbursement</h1>
+    <label>Amount:</label>
+    <input type="number" id="amount" name="amount">
+    <br>
+    <label>Description:</label>
+    <input type="text" id="description" name="description">
+    <br>
+    <label>Type:</label>
+    <input type="radio" id="radioButtonVal1" name="type" class="typeRadio" value=1>Transportation
+    <input type="radio" id="radioButtonVal2" name="type" class="typeRadio" value=2>Food
+    <input type="radio" id="radioButtonVal3" name="type" class="typeRadio" value=3>Lodging
+    <input type="radio" id="radioButtonVal4" name="type" class="typeRadio" value=4>Miscellaneous
+    <br>
+    <button onclick="submit()">Update</button>
+    <script src="./Reimbursements.js"></script>
+    <script>
+        async function submit() {
+
+            let typeVal = 0;
+            for (let ele of document.getElementsByClassName("typeRadio")) {
+                if (ele.checked == true) {
+                    typeVal = ele.value;
+                }
+            }
+            if (typeVal == 0) {
+                alert("Must select type");
+            }
+            else {
+                let reimbursement = {
+                    reimbursementId: localStorage.getItem("reimbIdToke"),
+                    reimbursementAmount: document.getElementById("amount").value,
+                    description: document.getElementById("description").value,
+                    author: localStorage.getItem("idToke"),
+                    //type: document.getElementById("type").value
+                    type: typeVal
+                }
+                console.log("Building Reim Obj: ", reimbursement);
+                let response = await updateReimbursement(reimbursement);
+                console.log("Response: ", response);
+                if (response.status == 200) {
+                    alert("Reimbursement successfully completed");
+                    window.location.href = "./Landing.html"
+                }
+                else {
+                    alert("Unable to create new reimbursement");
+                }
+            }
+        }
+    </script>
+
+
+    <button onclick="toLanding()">Home</button>
+    <script>
+        function toLanding() {
+            window.location.href = "./Landing.html"
+        }
+    </script>
+
+    <script>
+        window.onload = getItem(localStorage.getItem("reimbIdToke"));
+        async function getItem(id) {
+            let response = await fetch(
+                "http://localhost:8080/ERS/Reimbursement",
+                {
+                    method: "GET",
+                    headers:
+                    {
+                        "Content-Type": "application/json",
+                        "reimbId": localStorage.getItem("reimbIdToke"),
+                        "mode": "getOne"
+                    }
+                });
+            let json = await response.json();
+            console.log(json);
+
+            document.getElementById("amount").value = json.reimbursementAmount;
+            document.getElementById("description").value = json.description;
+            console.log(json.type);
+            switch (json.type) {
+                case 1:
+                    document.getElementById("radioButtonVal1").checked = true;
+                    break;
+                case 2:
+                    document.getElementById("radioButtonVal2").checked = true;
+                    break;
+                case 3:
+                    document.getElementById("radioButtonVal3").checked = true;
+                    break;
+                case 4:
+                    document.getElementById("radioButtonVal4").checked = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+    </script>
+
+</body>
+
+</html>
